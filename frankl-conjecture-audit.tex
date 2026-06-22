@@ -1,0 +1,458 @@
+% SPDX-FileCopyrightText: 2026 Nelson Daniel Spence
+% SPDX-License-Identifier: CC-BY-4.0
+
+\documentclass[11pt]{amsart}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{microtype}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue,
+  pdftitle={Auditing Two Claimed Proofs of Frankl's Conjecture and Structural Reductions for Minimal Counterexamples},
+  pdfauthor={Nelson Daniel Spence},
+  pdfsubject={Frankl's union-closed sets conjecture},
+  pdfkeywords={Frankl's conjecture, union-closed sets, minimal counterexample, binary matrix, proof audit}
+}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\F}{\mathcal F}
+\newcommand{\G}{\mathcal G}
+\newcommand{\Aalg}{\mathsf A_2}
+\newcommand{\freq}{d_{\F}}
+\newcommand{\bits}[1]{\texttt{#1}}
+\newcommand{\True}{\texttt{True}}
+\newcommand{\False}{\texttt{False}}
+
+\title[Auditing two claimed proofs of Frankl's conjecture]
+{Auditing Two Claimed Proofs of Frankl's Conjecture\\
+and Structural Reductions for Minimal Counterexamples}
+
+\author{Nelson Daniel Spence}
+\thanks{Project Navi, \texttt{nelson@projectnavi.ai}. Preprint, June 22, 2026. This paper does not claim a proof of Frankl's conjecture. Licensed under CC BY 4.0.}
+
+\subjclass[2020]{05D05, 05B20, 06A07, 06B05}
+\keywords{Frankl's conjecture, union-closed sets, minimal counterexample, binary matrix, proof audit}
+
+\begin{document}
+
+\begin{abstract}
+We audit two proposed proof mechanisms for Frankl's union-closed sets conjecture and give explicit finite counterexamples to their central claims. First, a $5\times4$ binary matrix has distinct rows, distinct columns, and no all-zero column; the recursive algorithm $\Aalg$ of Abdurakhmanov returns \True{} on this matrix, although every column contains only two ones and hence no column is heavy. This refutes the Heavy Column Theorem in the form used by a subsequent claimed proof of Frankl's conjecture. Second, the intersection-closed family
+\[
+  \{\varnothing,\{1\},\{2\},\{3\}\}
+\]
+violates the recursive upper bound asserted in Schrader's discarding-set argument.
+
+We then record structural reductions for a counterexample having the minimum possible number of member sets. Such a counterexample has odd cardinality $2k+1$. Moreover, deleting any member whose removal preserves union-closure exposes an element outside that member with frequency exactly $k$. Thus every removable member omits a maximum-frequency element. In the dual lattice formulation we prove a further deletion lemma: every two meet-irreducible elements have a common tight join-irreducible below them, where tight means that the corresponding principal filter has size $k+1$. Consequently, if there are exactly three tight coordinates, every meet-irreducible is incident with at least two of them, and each of the three two-element incidence patterns occurs. None of the results below resolves Frankl's conjecture.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+A finite family $\F$ of finite sets is \emph{union-closed} if
+\[
+  A,B\in\F \quad\Longrightarrow\quad A\cup B\in\F.
+\]
+For an element $x$ of the ground set, write
+\[
+  d_{\F}(x)=\bigl|\{A\in\F:x\in A\}\bigr|.
+\]
+Frankl's conjecture is the following.
+
+\begin{conjecture}[Frankl]
+If $\F\ne\{\varnothing\}$ is a finite union-closed family, then some element $x$ satisfies
+\[
+  d_{\F}(x)\ge \frac{|\F|}{2}.
+\]
+\end{conjecture}
+
+The conjecture, originating with Frankl~\cite{Frankl1995}, remains open despite substantial partial progress; see the survey of Bruhn and Schaudt~\cite{BruhnSchaudt2015}, the entropy breakthrough of Gilmer~\cite{Gilmer2022}, and subsequent improvements such as~\cite{AlweissHuangSellke2024}. Its elementary formulation has also generated many claimed proofs. Two recent examples are an algorithmic heavy-column approach of Abdurakhmanov~\cite{AbdurakhmanovHeavy2026,AbdurakhmanovFrankl2026} and a family of inequalities for intersection-closed systems proposed by Schrader~\cite{Schrader2025}.
+
+The purpose of this note is fourfold.
+\begin{enumerate}[label=(\roman*)]
+  \item We exhibit a small explicit counterexample to the heavy-column implication used in~\cite{AbdurakhmanovFrankl2026}.
+  \item We exhibit a four-member intersection-closed family on which the main recursive bound of~\cite{Schrader2025} fails.
+  \item We derive an odd-cardinality reduction for minimum counterexamples and a tight-frequency witness for every removable member.
+  \item In the lattice formulation, we strengthen the common-lower-bound condition for pairs of meet-irreducibles by forcing the common join-irreducible to be tight.
+\end{enumerate}
+
+The distinction between an audit and a disproof of Frankl's conjecture is important. The counterexamples below refute proof mechanisms, not the conjecture. In particular, the matrix in Section~\ref{sec:a2} is not closed under componentwise disjunction.
+
+\section{Preliminaries}
+
+Let $M$ be an $m\times n$ binary matrix. A column is \emph{heavy} if it contains at least $\lceil m/2\rceil$ ones. Equivalently, the number of ones is at least the number of zeros.
+
+The incidence matrix of a union-closed family has one row per member and one column per ground-set element. Union-closure is then closure of the row set under componentwise disjunction. A heavy column is precisely an element occurring in at least half the members.
+
+We shall also use the following deletion notion.
+
+\begin{definition}
+A member $A\in\F$ is \emph{removable} if $\F\setminus\{A\}$ is union-closed. It is \emph{admissibly removable} if, in addition, $\F\setminus\{A\}$ still contains a nonempty member.
+\end{definition}
+
+If $\varnothing\in\F$, then $(\F,\subseteq)$ is a finite lattice: the join is set union, and the meet of $A,B\in\F$ is the union of all members of $\F$ contained in $A\cap B$. In this normalized setting, a nonleast member is removable if and only if it is join-irreducible.
+
+\section{A counterexample to the Heavy Column Theorem}\label{sec:a2}
+
+\subsection{The recursive predicate}
+
+We restate the behavior of Algorithm $\Aalg$ used in~\cite{AbdurakhmanovHeavy2026,AbdurakhmanovFrankl2026}. For a column $i$, let $M_i^0$ and $M_i^1$ denote the row submatrices on which column $i$ is respectively $0$ and $1$. Let $M_i^{0-}$ and $M_i^{1-}$ be obtained by deleting column $i$.
+
+The recursive predicate $\Aalg(M)$ is evaluated as follows.
+\begin{enumerate}[label=(A\arabic*)]
+  \item If $M$ has one row and more than one column, return \True.
+  \item If $M$ has one column, return \True{} exactly when that column has at least as many ones as zeros.
+  \item Process the columns in order. For column $i$:
+  \begin{enumerate}[label=(\alph*)]
+    \item if $|M_i^0|=1$, return \True;
+    \item for each nonempty $K\in\{M_i^{0-},M_i^{1-}\}$, return \False{} if every column of $K$ has more zeros than ones;
+    \item recursively evaluate every such $K$, returning \False{} if any recursive call returns \False.
+  \end{enumerate}
+  \item If no earlier return occurs, return \True.
+\end{enumerate}
+
+The claimed Heavy Column Theorem states that, for a binary matrix with distinct rows, distinct columns, and no all-zero column,
+\[
+  \Aalg(M)=\True \quad\Longrightarrow\quad M\text{ has a heavy column}.
+\]
+
+\subsection{The explicit matrix}
+
+\begin{proposition}\label{prop:a2-counterexample}
+Let
+\[
+M=
+\begin{pmatrix}
+0&0&0&0\\
+0&0&1&1\\
+0&1&0&1\\
+1&0&1&0\\
+1&1&0&0
+\end{pmatrix}.
+\]
+Then $M$ has distinct rows, distinct columns, and no all-zero column. Every column has exactly two ones, so $M$ has no heavy column. Nevertheless,
+\[
+  \Aalg(M)=\True.
+\]
+\end{proposition}
+
+\begin{proof}
+The structural hypotheses are immediate. Since $M$ has five rows, a heavy column must contain at least three ones; each column of $M$ contains exactly two.
+
+At the top-level call, the zero and one fibers, after deleting the processed column, are as follows. Row strings are written without separators.
+\[
+\begin{array}{c|c|c}
+ i & M_i^{0-} & M_i^{1-}\\
+\hline
+1 & \{\bits{000},\bits{011},\bits{101}\} & \{\bits{010},\bits{100}\}\\
+2 & \{\bits{000},\bits{011},\bits{110}\} & \{\bits{001},\bits{100}\}\\
+3 & \{\bits{000},\bits{011},\bits{110}\} & \{\bits{001},\bits{100}\}\\
+4 & \{\bits{000},\bits{101},\bits{110}\} & \{\bits{001},\bits{010}\}.
+\end{array}
+\]
+Every displayed child has a column with at least as many ones as zeros, so the immediate all-light test never returns \False.
+
+It remains to check the recursive calls. There are only six child types.
+\begin{center}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.34\textwidth} >{\raggedright\arraybackslash}p{0.58\textwidth}}
+\toprule
+Rows & Reason $\Aalg$ returns \True\\
+\midrule
+$\{\bits{000},\bits{011},\bits{101}\}$ & For each of the first two columns, the children are $\{\bits{00},\bits{11}\}$ and a one-row matrix; these return \True. The third column has a unique zero.\\
+$\{\bits{000},\bits{011},\bits{110}\}$ & The first-column children are $\{\bits{00},\bits{11}\}$ and a one-row matrix; both return \True. The second column has a unique zero.\\
+$\{\bits{000},\bits{101},\bits{110}\}$ & The first column has a unique zero.\\
+$\{\bits{010},\bits{100}\}$ & The first column has a unique zero.\\
+$\{\bits{001},\bits{100}\}$ & The first column has a unique zero.\\
+$\{\bits{001},\bits{010}\}$ & Its first column is all zero, producing the child $\{\bits{01},\bits{10}\}$, which returns \True; its second column then has a unique zero.\\
+\bottomrule
+\end{tabular}
+\end{center}
+The two-row matrix $\{\bits{00},\bits{11}\}$ and the two-row matrix $\{\bits{01},\bits{10}\}$ each return \True{} immediately from a column with a unique zero. A one-row matrix with two columns returns \True{} by the first base case. Consequently every recursive child in the top-level computation returns \True, and the top-level loop terminates with \True.
+\end{proof}
+
+\begin{corollary}\label{cor:heavy-false}
+The Heavy Column Theorem quoted and applied in~\cite{AbdurakhmanovFrankl2026} is false as stated. Therefore the claimed proof of Frankl's conjecture in that manuscript does not follow from its stated premises.
+\end{corollary}
+
+\begin{remark}
+The row set of $M$ is not closed under componentwise disjunction. Thus Proposition~\ref{prop:a2-counterexample} does not show that an appropriately strengthened theorem restricted to disjunction-closed row sets is false. Such a strengthened statement would contain essentially the unresolved combinatorial content, and it requires an independent proof.
+\end{remark}
+
+The example is also minimal in its number of rows.
+
+\begin{proposition}\label{prop:row-minimal}
+No matrix with fewer than five rows satisfies the hypotheses of the Heavy Column Theorem, has no heavy column, and is accepted by $\Aalg$.
+\end{proposition}
+
+\begin{proof}
+For one or two rows, every nonzero column is heavy. Now let $m\in\{3,4\}$ and suppose there is no heavy column. Every nonzero column then has exactly one $1$. Since columns are distinct, two columns cannot place their unique $1$ in the same row.
+
+Process any column $i$. Its one-fiber has one row, and after deleting column $i$ that row is all zero. If at least two columns are present, this one-row all-zero child triggers the all-light test and $\Aalg$ returns \False. With only one column, distinctness of all $m\ge3$ rows is impossible. Hence no such matrix exists.
+\end{proof}
+
+\section{A counterexample to a discarding-set upper bound}\label{sec:schrader}
+
+Schrader~\cite{Schrader2025} works in the dual, intersection-closed formulation. Let $N=[n]$, let $\F\subseteq 2^N$ be intersection-closed, and write
+\[
+  \F_i=\{A\in\F:i\in A\},
+\]
+with the ground set ordered so that $|\F_1|\ge\cdots\ge|\F_n|$. A set $A\subseteq[i-1]$ is called discarding at level $i$ when $A\in\F$ but $A\cup\{i\}\notin\F$; let $D_i$ denote the collection of such sets.
+
+For a discarding set having no ``root'' in the terminology of~\cite{Schrader2025}, the excluded collection is
+\[
+  H_i^A=\bigl\{A\cup\{i\}\cup X:X\subseteq\{i+1,\ldots,n\}\bigr\}.
+\]
+The recursive quantity is initialized by $t_0=2^{n-1}$ and defined by
+\[
+  t_i=t_{i-1}-\sum_{A\in D_i}|H_i^A|.
+\]
+Theorem 5.1 of~\cite{Schrader2025} asserts, among other things, that
+\[
+  t_i\ge |\F_i| \qquad (1\le i\le n).
+\]
+
+\begin{proposition}\label{prop:schrader-counterexample}
+The asserted inequality $t_i\ge|\F_i|$ fails for the intersection-closed family
+\[
+  \F=\{\varnothing,\{1\},\{2\},\{3\}\}
+\]
+on $N=[3]$.
+\end{proposition}
+
+\begin{proof}
+Each element has frequency one, so the required order $|\F_1|\ge|\F_2|\ge|\F_3|$ is satisfied. We have $t_0=2^{3-1}=4$ and $D_1=\varnothing$, hence $t_1=4$.
+
+At level $2$, the only discarding set is $\{1\}$. It has no root, and
+\[
+  H_2^{\{1\}}=\{\{1,2\},\{1,2,3\}\}.
+\]
+Thus $t_2=4-2=2$.
+
+At level $3$, the discarding sets are $\{1\}$ and $\{2\}$. Again they have no roots, and
+\[
+  H_3^{\{1\}}=\{\{1,3\}\},
+  \qquad
+  H_3^{\{2\}}=\{\{2,3\}\}.
+\]
+Therefore
+\[
+  t_3=2-1-1=0,
+\]
+whereas $|\F_3|=1$. Hence $t_3\not\ge|\F_3|$.
+\end{proof}
+
+\begin{remark}[Location of the accounting failure]
+The excluded collections in the preceding example are pairwise disjoint, so disjointness is not the missing property. The issue is that $t_{i-1}$ is merely a numerical upper bound inherited from a previous coordinate. To subtract $|H_i^A|$, one must know that the newly excluded sets lie inside a common candidate universe represented by that bound. Disjointness from previously excluded sets does not establish this containment. In the example, $\{2,3\}\in H_3^{\{2\}}$ was never among the four subsets containing element $1$ from which $t_0$ was initialized.
+\end{remark}
+
+\section{Reproducibility}\label{sec:reproducibility}
+
+The ancillary file \texttt{verify\_a2\_counterexample.py} contains a direct implementation of Algorithm $\Aalg$ as restated in Section~\ref{sec:a2}. It verifies the matrix in Proposition~\ref{prop:a2-counterexample}, emits the complete recursive trace on request, reproduces the calculation in Proposition~\ref{prop:schrader-counterexample}, and exhaustively checks the row-minimality assertion of Proposition~\ref{prop:row-minimal}. The script uses only the Python standard library. The mathematical arguments in the paper do not depend on trusting a search heuristic or numerical approximation.
+
+\section{Minimum-cardinality counterexamples}\label{sec:minimal}
+
+We now turn from auditing to a constructive reduction. Assume for contradiction that Frankl's conjecture is false, and choose a counterexample $\F$ with the minimum possible number of members. Write $m=|\F|$.
+
+\begin{lemma}\label{lem:minimal-member-removable}
+Every inclusion-minimal nonempty member $A\in\F$ is removable.
+\end{lemma}
+
+\begin{proof}
+Suppose $B,C\in\F\setminus\{A\}$ and $B\cup C=A$. Then $B,C\subseteq A$. By inclusion-minimality of the nonempty set $A$, each of $B$ and $C$ is either empty or equal to $A$. Since $A$ has been removed, both must be empty, which gives $B\cup C=\varnothing\ne A$. Therefore no union of two remaining members is $A$, and deleting $A$ preserves union-closure.
+\end{proof}
+
+\begin{proposition}[A normalized minimum counterexample]\label{prop:empty-normalization}
+If a minimum-cardinality counterexample exists, then one exists with the same number of members and with $\varnothing$ as a member.
+\end{proposition}
+
+\begin{proof}
+If $\varnothing\in\F$, there is nothing to prove. Otherwise choose an inclusion-minimal member $A$ and set
+\[
+  \G=(\F\setminus\{A\})\cup\{\varnothing\}.
+\]
+By Lemma~\ref{lem:minimal-member-removable}, $\G$ is union-closed. Every element frequency in $\G$ is no larger than its frequency in $\F$, so $\G$ remains a counterexample. It has the same number of members.
+\end{proof}
+
+\begin{theorem}[Odd-cardinality reduction]\label{thm:odd}
+A minimum-cardinality counterexample has odd cardinality.
+\end{theorem}
+
+\begin{proof}
+Suppose $m=2k$. Choose an inclusion-minimal nonempty member $A$. By Lemma~\ref{lem:minimal-member-removable}, the family
+\[
+  \F'=\F\setminus\{A\}
+\]
+is union-closed. It remains nontrivial, since a family with at most one nonempty member cannot be a counterexample. By minimality of $\F$, Frankl's conjecture holds for $\F'$, so some element $x$ belongs to at least
+\[
+  \left\lceil\frac{2k-1}{2}\right\rceil=k
+\]
+members of $\F'$. It then belongs to at least $k=m/2$ members of $\F$, contradicting that $\F$ is a counterexample.
+\end{proof}
+
+Henceforth write
+\[
+  |\F|=2k+1.
+\]
+Every element has frequency at most $k$.
+
+\begin{theorem}[Tight witness for deletion]\label{thm:tight-witness}
+Let $A\in\F$ be admissibly removable. Then there exists an element $x_A\notin A$ such that
+\[
+  d_{\F}(x_A)=k.
+\]
+\end{theorem}
+
+\begin{proof}
+The family $\F' = \F\setminus\{A\}$ is a smaller nontrivial union-closed family, so by the minimality of $\F$ it has an element $x_A$ with
+\[
+  d_{\F'}(x_A)\ge \frac{|\F'|}{2}=k.
+\]
+Since $\F$ is a counterexample of size $2k+1$, every element has frequency at most $k$ in $\F$. Thus
+\[
+  d_{\F'}(x_A)=d_{\F}(x_A)=k.
+\]
+The equality of the two frequencies implies $x_A\notin A$.
+\end{proof}
+
+\begin{definition}
+An element $x$ is \emph{tight} if $d_{\F}(x)=k$. Let
+\[
+  T=T(\F)=\{x:d_{\F}(x)=k\}
+\]
+denote the set of tight elements.
+\end{definition}
+
+\begin{corollary}\label{cor:removable-omits-tight}
+The set $T$ is nonempty, and every admissibly removable member $A$ satisfies
+\[
+  T\nsubseteq A.
+\]
+In particular, every inclusion-minimal nonempty member omits a tight element.
+\end{corollary}
+
+\begin{proof}
+Apply Theorem~\ref{thm:tight-witness} to any inclusion-minimal nonempty member. The same theorem gives the assertion for every admissibly removable member.
+\end{proof}
+
+Norton and Sarvate proved the stronger known fact that a minimum-cardinality counterexample has at least three tight elements~\cite{NortonSarvate1993}. Theorem~\ref{thm:tight-witness} is useful because it attaches a tight witness to every deletion, rather than merely asserting that tight elements exist.
+
+\subsection{Lattice interpretation}
+
+Let $L=(\F,\subseteq)$. A nonleast member $A$ is removable exactly when it is join-irreducible. Thus Corollary~\ref{cor:removable-omits-tight} gives an incidence restriction between join-irreducible members and tight ground-set elements: no join-irreducible member contains all of $T$.
+
+There is also a complementary restriction in the intersection-closed lattice formulation. Bouchard proved that in a minimum-size lattice counterexample, every meet-irreducible lies above a join-irreducible whose principal filter has cardinality $(|L|+1)/2$~\cite[Theorem~2.12]{Bouchard2025}. Under the canonical set representation, these are precisely the tight coordinates on the intersection-closed side.
+
+We now strengthen the pairwise common-lower-bound conclusion of~\cite[Corollary~2.11]{Bouchard2025}. Let $L$ be a minimum-size lattice counterexample. By Theorem~\ref{thm:odd}, write
+\[
+  |L|=2k+1.
+\]
+A join-irreducible $j$ of $L$ is called \emph{lattice-tight} if
+\[
+  |(\mathord\uparrow j)_L|=k+1.
+\]
+Every join-irreducible has a principal filter of size at least $k+1$.
+
+\begin{theorem}[Tight common lower bound]\label{thm:tight-common}
+For any two distinct meet-irreducible elements $m_1,m_2$ of $L$, there exists a lattice-tight join-irreducible $j$ such that
+\[
+  j\le m_1\qquad\text{and}\qquad j\le m_2.
+\]
+\end{theorem}
+
+\begin{proof}
+Assume to the contrary that no lattice-tight join-irreducible lies below both $m_1$ and $m_2$. Set
+\[
+  \widehat L=L\setminus\{m_1,m_2\}.
+\]
+The subposet $\widehat L$ is a lattice because a set of meet-irreducible elements may be deleted from a finite lattice~\cite[Theorem~1.4]{Bouchard2025}. We show that every join-irreducible $\widehat j$ of $\widehat L$ satisfies
+\[
+  |(\mathord\uparrow\widehat j)_{\widehat L}|\ge k.
+\]
+Since $|\widehat L|=2k-1$, this would make $\widehat L$ a smaller counterexample.
+
+First suppose that $\widehat j$ is already join-irreducible in $L$. If it is lattice-tight, at most one of $m_1,m_2$ lies in $(\mathord\uparrow\widehat j)_L$ by the contrary assumption, and hence its filter in $\widehat L$ has size at least $k$. If it is not lattice-tight, then its filter in $L$ has size at least $k+2$, so deleting two elements again leaves at least $k$.
+
+It remains to consider a join-irreducible $\widehat j$ of $\widehat L$ that is join-reducible in $L$. At least one deleted element, say $m$, lower covers $\widehat j$ in $L$; write $m'$ for the other deleted meet-irreducible. Because $m$ is meet-irreducible, $\widehat j$ is its unique upper cover.
+
+If $m$ is join-irreducible, then it is doubly irreducible. By~\cite[Lemma~2.5]{Bouchard2025}, $m$ is lattice-tight. The contrary assumption gives $m\nleq m'$. Consequently $m'\notin(\mathord\uparrow\widehat j)_L$, while $m$ lies strictly below $\widehat j$. Since
+\[
+  (\mathord\uparrow m)_L=\{m\}\mathbin{\dot\cup}(\mathord\uparrow\widehat j)_L,
+\]
+we obtain
+\[
+  |(\mathord\uparrow\widehat j)_{\widehat L}|
+  =|(\mathord\uparrow\widehat j)_L|=k.
+\]
+
+Suppose instead that $m$ is join-reducible. If none of the lower covers of $m$ is $m'$, then two distinct lower covers of $m$ remain in $\widehat L$. Their join in $L$ is $m$, and their join in $\widehat L$ is therefore $\widehat j$, because every element strictly above the meet-irreducible $m$ lies above its unique upper cover $\widehat j$. This contradicts the join-irreducibility of $\widehat j$ in $\widehat L$. Hence $m'$ lower covers $m$.
+
+If $m'$ were join-reducible, two distinct lower covers of $m'$ would remain in $\widehat L$ and, by the same argument applied along the chain
+\[
+  m'<m<\widehat j,
+\]
+their join in $\widehat L$ would be $\widehat j$, again a contradiction. Thus $m'$ is join-irreducible; the least element is not meet-irreducible in a minimum counterexample~\cite[Corollary~2.2]{Bouchard2025}, so there is no exceptional zero case. Hence $m'$ is doubly irreducible and therefore lattice-tight by~\cite[Lemma~2.5]{Bouchard2025}. But $m'\le m$ and $m'\le m'$, so $m'$ is a lattice-tight join-irreducible below both deleted meet-irreducibles, contrary to the assumption.
+
+Thus every join-irreducible of $\widehat L$ has a principal filter of size at least $k>|\widehat L|/2$. This makes $\widehat L$ a smaller counterexample, contradicting the minimality of $L$.
+\end{proof}
+
+\section{The active exact-three frontier}\label{sec:frontier}
+
+The smallest numerically possible tight set has three members. On the lattice side, suppose that the complete set of lattice-tight join-irreducibles is
+\[
+  J_0=\{a,b,c\}.
+\]
+For each meet-irreducible $m$, define its tight trace
+\[
+  S(m)=\{j\in J_0:j\le m\}.
+\]
+
+\begin{corollary}[Exact-three incidence structure]\label{cor:exact-three}
+Every meet-irreducible $m$ satisfies $|S(m)|\ge2$. Moreover, each of the traces
+\[
+  \{a,b\},\qquad \{a,c\},\qquad \{b,c\}
+\]
+occurs for at least one meet-irreducible.
+\end{corollary}
+
+\begin{proof}
+Theorem~\ref{thm:tight-common} implies that the traces of any two meet-irreducibles intersect. Suppose $S(m)=\{a\}$ for some meet-irreducible $m$. Then every other meet-irreducible has $a$ in its tight trace, so $a$ lies below every meet-irreducible of $L$. In a finite lattice, the meet of all meet-irreducible elements is the least element~\cite[Section~I.3]{Gratzer2011}. This would give $a\le0_L$, a contradiction. Thus every tight trace has size at least two.
+
+For each $a\in J_0$, some meet-irreducible does not lie above $a$; otherwise $a$ would again lie below the meet of all meet-irreducibles. A tight trace omitting $a$ has at least two members and is contained in $J_0\setminus\{a\}$, so it equals $J_0\setminus\{a\}$. Repeating this for $a,b,c$ yields all three displayed traces.
+\end{proof}
+
+Complementing the original union-closed family converts a union-side tight element of frequency $k$ into an intersection-side coordinate of frequency $k+1=(|L|+1)/2$. Thus Corollary~\ref{cor:exact-three} is the dual counterpart of the deletion-witness restriction from Theorem~\ref{thm:tight-witness}, but it is strictly stronger than the previously known assertion that every meet-irreducible has at least one tight coordinate below it.
+
+The exact-three case is therefore reduced to a rigid triangle of tight incidences: every meet-irreducible has trace in
+\[
+  \bigl\{\{a,b\},\{a,c\},\{b,c\},\{a,b,c\}\bigr\},
+\]
+and all three two-element traces occur. The remaining task is to use the lattice order beyond this incidence shadow. Two concrete possibilities are to derive the $2$-transversal configuration excluded for minimal counterexamples by Hachimori and Kashiwabara~\cite{HachimoriKashiwabara2024}, or to construct a larger deletion set whose losses are absorbed by the slack of non-tight principal filters. Neither finishing step is proved here.
+
+\section{Conclusion}
+
+Two proposed proof mechanisms for Frankl's conjecture fail on very small explicit objects. The $5\times4$ matrix of Proposition~\ref{prop:a2-counterexample} refutes the stated implication from acceptance by $\Aalg$ to a heavy column. The four-member family of Proposition~\ref{prop:schrader-counterexample} refutes a recursive discarding-set upper bound even though the excluded collections are pairwise disjoint.
+
+The minimum-counterexample route remains viable. A smallest counterexample must have odd size $2k+1$, and every admissible one-member deletion exposes a tight element of frequency $k$ outside the deleted member. On the lattice side, every pair of meet-irreducibles has a common tight join-irreducible below it. In the exact-three case, every meet-irreducible is therefore incident with at least two tight coordinates, and all three two-coordinate traces occur. This reduces the remaining exact-three problem to exploiting the order structure behind a rigid triangular incidence pattern. The conjecture itself remains unresolved.
+
+\bibliographystyle{amsplain}
+\bibliography{references}
+
+\end{document}

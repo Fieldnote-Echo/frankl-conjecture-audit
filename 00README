@@ -1,0 +1,6 @@
+spec_version: 1
+process:
+  compiler: pdflatex
+sources:
+  - filename: frankl-conjecture-audit.tex
+    usage: toplevel

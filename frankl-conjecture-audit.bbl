@@ -1,0 +1,58 @@
+\providecommand{\bysame}{\leavevmode\hbox to3em{\hrulefill}\thinspace}
+\providecommand{\MR}{\relax\ifhmode\unskip\space\fi MR }
+% \MRhref is called by the amsart/book/proc definition of \MR.
+\providecommand{\MRhref}[2]{%
+  \href{http://www.ams.org/mathscinet-getitem?mr=#1}{#2}
+}
+\providecommand{\href}[2]{#2}
+\begin{thebibliography}{10}
+
+\bibitem{AbdurakhmanovFrankl2026}
+Jamolidin~K. Abdurakhmanov, \emph{An algorithmic proof of frankl's union-closed
+  sets conjecture}, HAL preprint hal-05482771, version 1, 2026, HAL:
+  \href{https://hal.science/hal-05482771v1}{hal-05482771v1}.
+
+\bibitem{AbdurakhmanovHeavy2026}
+\bysame, \emph{On the existence of heavy columns in binary matrices with
+  distinct rows}, 2026, arXiv:2601.18450.
+
+\bibitem{AlweissHuangSellke2024}
+Ryan Alweiss, Brice Huang, and Mark Sellke, \emph{Improved lower bound for
+  frankl's union-closed sets conjecture}, The Electronic Journal of
+  Combinatorics \textbf{31} (2024), no.~3, Paper No. P3.35.
+
+\bibitem{Bouchard2025}
+Christopher Bouchard, \emph{On the lattice formulation of the union-closed sets
+  conjecture}, 2025, arXiv:2503.00277.
+
+\bibitem{BruhnSchaudt2015}
+Henning Bruhn and Oliver Schaudt, \emph{The journey of the union-closed sets
+  conjecture}, Graphs and Combinatorics \textbf{31} (2015), no.~6, 2043--2074.
+
+\bibitem{Frankl1995}
+Peter Frankl, \emph{Extremal set systems}, Handbook of Combinatorics (Ronald~L.
+  Graham, Martin Gr{\"o}tschel, and L{\'a}szl{\'o} Lov{\'a}sz, eds.), Elsevier,
+  1995, pp.~1293--1329.
+
+\bibitem{Gilmer2022}
+Justin Gilmer, \emph{A constant lower bound for the union-closed sets
+  conjecture}, 2022, arXiv:2211.09055.
+
+\bibitem{Gratzer2011}
+George Gr{\"a}tzer, \emph{Lattice theory: Foundation}, Birkh{\"a}user, 2011.
+
+\bibitem{HachimoriKashiwabara2024}
+Masahiro Hachimori and Kenji Kashiwabara, \emph{Several minimality concepts
+  related to frankl's conjecture}, Graphs and Combinatorics \textbf{40} (2024),
+  130.
+
+\bibitem{NortonSarvate1993}
+R.~M. Norton and D.~G. Sarvate, \emph{A note on the union-closed sets
+  conjecture}, Journal of the Australian Mathematical Society. Series A
+  \textbf{55} (1993), no.~3, 411--413.
+
+\bibitem{Schrader2025}
+Rainer Schrader, \emph{A class of inequalities for intersection-closed set
+  systems}, 2025, arXiv:2501.03302.
+
+\end{thebibliography}
