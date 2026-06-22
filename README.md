@@ -1,5 +1,7 @@
 # Frankl Conjecture Audit
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20800102.svg)](https://doi.org/10.5281/zenodo.20800102)
+
 Source package for a preprint auditing two claimed proof mechanisms for Frankl's union-closed sets conjecture and recording structural reductions for minimum counterexamples.
 
 The paper does not claim a proof of Frankl's conjecture. It gives explicit finite counterexamples to two proposed proof mechanisms, plus independently checkable structural lemmas for the minimum-counterexample route.
