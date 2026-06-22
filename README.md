@@ -9,7 +9,7 @@ The paper does not claim a proof of Frankl's conjecture. It gives explicit finit
 - `frankl-conjecture-audit.tex` - top-level paper source
 - `frankl-conjecture-audit.bbl` - generated bibliography used for source-package builds
 - `references.bib` - bibliography database
-- `anc/verify_a2_counterexample.py` - standard-library Python verifier for the finite checks
+- `anc/verify_counterexamples.py` - standard-library Python verifier for the A2 and Schrader counterexamples
 - `00README` - source build descriptor
 - `LICENSE` - Creative Commons Attribution 4.0 International
 
@@ -20,7 +20,7 @@ pdflatex frankl-conjecture-audit.tex
 bibtex frankl-conjecture-audit
 pdflatex frankl-conjecture-audit.tex
 pdflatex frankl-conjecture-audit.tex
-python3 anc/verify_a2_counterexample.py --trace --exhaustive
+python3 anc/verify_counterexamples.py --trace --exhaustive
 ```
 
 Author: Nelson Daniel Spence, Project Navi.

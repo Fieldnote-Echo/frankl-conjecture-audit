@@ -265,7 +265,7 @@ The excluded collections in the preceding example are pairwise disjoint, so disj
 
 \section{Reproducibility}\label{sec:reproducibility}
 
-The ancillary file \texttt{verify\_a2\_counterexample.py} contains a direct implementation of Algorithm $\Aalg$ as restated in Section~\ref{sec:a2}. It verifies the matrix in Proposition~\ref{prop:a2-counterexample}, emits the complete recursive trace on request, reproduces the calculation in Proposition~\ref{prop:schrader-counterexample}, and exhaustively checks the row-minimality assertion of Proposition~\ref{prop:row-minimal}. The script uses only the Python standard library. The mathematical arguments in the paper do not depend on trusting a search heuristic or numerical approximation.
+The ancillary file \texttt{verify\_counterexamples.py} contains a direct implementation of Algorithm $\Aalg$ as restated in Section~\ref{sec:a2}. It verifies the matrix in Proposition~\ref{prop:a2-counterexample}, emits the complete recursive trace on request, reproduces the discarding-set calculation in Proposition~\ref{prop:schrader-counterexample}, and exhaustively checks the row-minimality assertion of Proposition~\ref{prop:row-minimal}. The script uses only the Python standard library. The mathematical arguments in the paper do not depend on trusting a search heuristic or numerical approximation.
 
 \section{Minimum-cardinality counterexamples}\label{sec:minimal}
 
